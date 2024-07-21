@@ -1,0 +1,33 @@
+{
+  "name": "ios-bug-reporter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "iOS Bug Reports to GitHub Issues",
+  "author": "Roscoe Rubin-Rottenberg",
+  "license": "ISC",
+  "homepage": "https://github.com//",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ],
+  "scripts": {
+    "start": "probot run ./index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "probot": "^13.3.6",
+    "probot-commands": "^1.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "nock": "^14.0.0-beta.5",
+    "smee-client": "^2.0.0"
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
