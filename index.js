@@ -1,47 +1,48 @@
-const express = require('express');
-const { Probot } = require('probot');
+/**
+ * This is the main entrypoint to your Probot app
+ * 
+ * @param {import('probot').Probot} app
+ */
+import * as express from "express";
 
-module.exports = (app) => {
-  const router = express.Router();
+export default (app, { getRouter }) => {
+  const router = getRouter("/issue");
+  router.use(express.static("public"));
 
-  // Function to create an issue
-  const createIssue = async function (issue, context) {
-    const { owner, repo, title, body, assignees, labels } = issue;
-    return context.octokit.issues.create({ owner, repo, title, body, labels, assignees });
-  }
+  app.log.info("Yay, the app was loaded!");
 
-  // Route to handle issue creation
-  router.post('/:owner/:repo', express.json(), async (req, res) => {
-    const { owner, repo } = req.params;
-    const { title, body, assignees, labels } = req.body;
+  app.on("issues.opened", async (context) => {
+    const issueComment = context.issue({
+      body: "Thanks for opening this issue!",
+    });
+    return context.octokit.issues.createComment(issueComment);
+  });
 
-    const issue = {
-      owner,
-      repo,
-      title,
-      body,
-      assignees,
-      labels
-    };
+  router.get("/hello-world", (req, res) => {
+    res.send("Hello World");
+  });
 
+  router.post("/:owner/:repo", async (req, res) => {
     try {
-      const context = {
-        octokit: app.octokit
-      };
-      
-      await createIssue(issue, context);
-      res.status(201).json({ message: 'Issue created successfully' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to create issue' });
+      const { owner, repo } = req.params;
+      const { title, body } = req.body;
+
+      if (!title || !body) {
+        return res.status(400).json({ error: "Title and body are required" });
+      }
+
+      const issue = await app.octokit.issues.create({
+        owner,
+        repo,
+        title,
+        body,
+      });
+
+      res.status(201).json(issue.data);
+    } catch (error) {
+      app.log.error(error);
+      res.status(500).json({ error: "Failed to create issue" });
     }
   });
-
-  // Use the router
-  app.router.use('/', router);
-
-  // The rest of your bot logic...
-  app.on("installation.created", async (context) => {
-    // Your existing installation.created event handler...
-  });
 };
+

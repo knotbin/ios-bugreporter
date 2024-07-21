@@ -1,6 +1,6 @@
-# ios-bug-reporter
+# ios-bugreporter
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that iOS Bug Reports to GitHub Issues
+> A GitHub App built with [Probot](https://github.com/probot/probot) that A Probot app
 
 ## Setup
 
@@ -16,15 +16,15 @@ npm start
 
 ```sh
 # 1. Build container
-docker build -t ios-bug-reporter .
+docker build -t ios-bugreporter .
 
 # 2. Start container
-docker run -e APP_ID=<app-id> -e PRIVATE_KEY=<pem-value> ios-bug-reporter
+docker run -e APP_ID=<app-id> -e PRIVATE_KEY=<pem-value> ios-bugreporter
 ```
 
 ## Contributing
 
-If you have suggestions for how ios-bug-reporter could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
+If you have suggestions for how ios-bugreporter could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
 
 For more, check out the [Contributing Guide](CONTRIBUTING.md).
 

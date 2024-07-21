@@ -1,20 +1,26 @@
-const nock = require("nock");
+import nock from "nock";
 // Requiring our app implementation
-const myProbotApp = require("..");
-const { Probot, ProbotOctokit } = require("probot");
+import myProbotApp from "../index.js";
+import { Probot, ProbotOctokit } from "probot";
 // Requiring our fixtures
-const installationCreatedPayload = require("./fixtures/installation.created");
-const fs = require("fs");
-const path = require("path");
+//import payload from "./fixtures/issues.opened.json" with { type: "json" };
+const issueCreatedBody = { body: "Thanks for opening this issue!" };
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Mocking out our use of random numbers
-const mockMath = Object.create(global.Math);
-mockMath.random = () => 1;
-global.Math = mockMath;
+import { describe, beforeEach, afterEach, test } from "node:test";
+import assert from "node:assert";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const privateKey = fs.readFileSync(
   path.join(__dirname, "fixtures/mock-cert.pem"),
   "utf-8",
+);
+
+const payload = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "fixtures/issues.opened.json"), "utf-8"),
 );
 
 describe("My Probot app", () => {
@@ -35,52 +41,28 @@ describe("My Probot app", () => {
     probot.load(myProbotApp);
   });
 
-  test("creates a pull request on installation", async () => {
+  test("creates a comment when an issue is opened", async () => {
     const mock = nock("https://api.github.com")
+      // Test that we correctly return a test token
       .post("/app/installations/2/access_tokens")
       .reply(200, {
         token: "test",
         permissions: {
-          contents: "write",
-          pull_requests: "write",
+          issues: "write",
         },
       })
 
-      .get("/repos/hiimbex/testing-things/git/ref/heads%2Fmaster")
-      .reply(200, { object: { sha: "abc123" } })
-
-      .post("/repos/hiimbex/testing-things/git/refs", {
-        ref: "refs/heads/new-branch-9999",
-        sha: "abc123",
-      })
-      .reply(200)
-
-      .put(
-        "/repos/hiimbex/testing-things/contents/path%2Fto%2Fyour%2Ffile.md",
-        {
-          branch: "new-branch-9999",
-          message: "adds config file",
-          content: "TXkgbmV3IGZpbGUgaXMgYXdlc29tZSE=",
-        },
-      )
-      .reply(200)
-
-      .post("/repos/hiimbex/testing-things/pulls", {
-        title: "Adding my file!",
-        head: "new-branch-9999",
-        base: "master",
-        body: "Adds my new file!",
-        maintainer_can_modify: true,
+      // Test that a comment is posted
+      .post("/repos/hiimbex/testing-things/issues/1/comments", (body) => {
+        assert.deepEqual(body, issueCreatedBody);
+        return true;
       })
       .reply(200);
 
     // Receive a webhook event
-    await probot.receive({
-      name: "installation",
-      payload: installationCreatedPayload,
-    });
+    await probot.receive({ name: "issues", payload });
 
-    expect(mock.pendingMocks()).toStrictEqual([]);
+    assert.deepStrictEqual(mock.pendingMocks(), []);
   });
 
   afterEach(() => {
