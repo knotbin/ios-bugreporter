@@ -9,7 +9,7 @@ export default (app, { getRouter }) => {
   const router = getRouter("/issue");
   router.use(express.static("public"));
 
-  router.post("/:owner/:repo", async (req, res) => {
+  router.post("/new-bug", async (req, res) => {
     try {
       const { owner, repo } = req.params;
       const { title, body } = req.body;
