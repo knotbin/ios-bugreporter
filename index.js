@@ -20,8 +20,8 @@ export default (app, { getRouter }) => {
         labels: ["bug"]
       };
       const path = `${req.query.owner}/${req.query.repo}`
-      octokit.createIssue(
-        path, issue.body, issue.title, issue.body 
+      github.issues.create(
+        req.query.owner, req.query.repo, issue.title, issue.body 
       )
     } catch (error) {
       app.log.error(error);
