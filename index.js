@@ -4,8 +4,15 @@
  * @param {import('probot').Probot} app
  */
 import * as express from "express";
+import { ProbotOctokit } from "probot";
 
 export default (app, { getRouter }) => {
+  const octokit = ProbotOctokit({
+    auth: {
+      id: process.env.APP_ID,
+      privateKey: process.env.PRIVATE_KEY
+    }
+  })
   const router = getRouter("/issue");
   router.use(express.static("public"));
 
@@ -18,15 +25,14 @@ export default (app, { getRouter }) => {
         body: req.query.body
       };
 
-      createIssue(issue, app)
+      createIssue(issue)
     } catch (error) {
       app.log.error(error);
       res.status(500).json({ error: "Failed to create issue" });
     }
   });
 };
-const createIssue = async function (issue, app) {
-  const github = await app.auth();
+const createIssue = async function (issue) {
   const owner = issue.owner; const repo = issue.repo; const title = issue.title; const body = issue.body; const assignees = issue.assignees; const labels = issue.labels
-  return github.issues.create({ owner, repo, title, body, labels, assignees })
+  octokit.issues.createIssue({ owner, repo, title, body, labels, assignees })
 }
