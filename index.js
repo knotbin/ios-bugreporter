@@ -1,7 +1,6 @@
 /**
  * This is the main entrypoint to your Probot app
  * @param {import('probot').Probot} app
- * @param {import('probot').Context} context
  */
 import * as express from "express";
 
@@ -13,6 +12,7 @@ export default (app, { getRouter }) => {
 
   router.post("/new", async (req, res) => {
     try {
+      const context = app.context
       const issue = {
         title: req.query.title,
         body: req.query.body,
