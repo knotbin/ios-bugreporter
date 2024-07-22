@@ -13,6 +13,7 @@ export default (app, { getRouter }) => {
   app.log.info("Yay, the app was loaded!");
 
   router.post("/new", async (req, res) => {
+    const github = await app.auth();
     try {
       const issue = {
         title: req.query.title,
