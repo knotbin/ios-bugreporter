@@ -7,7 +7,7 @@ import * as express from "express";
 import { ProbotOctokit } from "probot";
 
 export default (app, { getRouter }) => {
-  const octokit = ProbotOctokit({
+  const octokit = new ProbotOctokit({
     auth: {
       id: process.env.APP_ID,
       privateKey: process.env.PRIVATE_KEY
@@ -25,14 +25,14 @@ export default (app, { getRouter }) => {
         body: req.query.body
       };
 
-      createIssue(issue)
+      createIssue(issue, octokit)
     } catch (error) {
       app.log.error(error);
       res.status(500).json({ error: "Failed to create issue" });
     }
   });
 };
-const createIssue = async function (issue) {
+const createIssue = async function (issue, octokit) {
   const owner = issue.owner; const repo = issue.repo; const title = issue.title; const body = issue.body; const assignees = issue.assignees; const labels = issue.labels
   octokit.issues.createIssue({ owner, repo, title, body, labels, assignees })
 }
