@@ -6,7 +6,7 @@
 import * as express from "express";
 
 export default (app, { getRouter }) => {
-  const router = getRouter("/issue");
+  const router = getRouter.post("/issue");
   router.use(express.static("public"));
   // Your code here
   app.log.info("Yay, the app was loaded!");
