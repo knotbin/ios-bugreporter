@@ -3,25 +3,25 @@
  * @param {import('probot').Probot} app
  */
 import * as express from "express";
+import { ProbotOctokit } from "probot";
 
 export default (app, { getRouter }) => {
+  const octokit = new ProbotOctokit()
   const router = getRouter("/issue");
+  const path = `${req.query.owner}/${req.query.repo}`
   router.use(express.static("public"));
   // Your code here
   app.log.info("Yay, the app was loaded!");
 
   router.post("/new", async (req, res) => {
     try {
-      const context = app.context
       const issue = {
         title: req.query.title,
         body: req.query.body,
         labels: ["bug"]
       };
-      context.repo.owner = req.query.owner
-      context.repo.repo = req.query.repo
-      const { owner = req.query.owner, repo = req.query.repo } = context.repo()
-        return context.github.issues.create(context.repo(issue)
+      octokit.createIssue(
+        path, issue.body, issue.title, issue.body 
       )
     } catch (error) {
       app.log.error(error);
