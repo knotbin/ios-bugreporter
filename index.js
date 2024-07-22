@@ -8,7 +8,6 @@ import { ProbotOctokit } from "probot";
 export default (app, { getRouter }) => {
   const octokit = new ProbotOctokit()
   const router = getRouter("/issue");
-  const path = `${req.query.owner}/${req.query.repo}`
   router.use(express.static("public"));
   // Your code here
   app.log.info("Yay, the app was loaded!");
@@ -20,6 +19,7 @@ export default (app, { getRouter }) => {
         body: req.query.body,
         labels: ["bug"]
       };
+      const path = `${req.query.owner}/${req.query.repo}`
       octokit.createIssue(
         path, issue.body, issue.title, issue.body 
       )
