@@ -5,7 +5,7 @@
  */
 import * as express from "express";
 
-export default (app) => {
+export default (app, { getRouter }) => {
   const router = getRouter("/issue");
   router.use(express.static("public"));
   // Your code here
@@ -15,12 +15,14 @@ export default (app) => {
     try {
       const issue = {
         title: req.query.title,
-        body: req.query.body
+        body: req.query.body,
+        labels: ["bug"]
       };
       context.repo.owner = req.query.owner
       context.repo.repo = req.query.repo
       const { owner = req.query.owner, repo = req.query.repo } = context.repo()
-      return context.createIssue(title, body)
+        return context.github.issues.create(context.repo(issue)
+      )
     } catch (error) {
       app.log.error(error);
       res.status(500).json({ error: `Failed to create issue in repo ${repo}` });
