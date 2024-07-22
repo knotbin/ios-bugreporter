@@ -11,25 +11,22 @@ export default (app, { getRouter }) => {
 
   router.post("/new-bug", async (req, res) => {
     try {
-      const { owner, repo } = req.params;
-      const { title, body } = req.body;
+      const issue = {
+        owner: req.query.owner,
+        repo: req.query.repo,
+        title: req.query.title,
+        body: req.query.body
+      };
 
-      if (!title || !body) {
-        return res.status(400).json({ error: "Title and body are required" });
-      }
-
-      const issue = await app.octokit.issues.create({
-        owner,
-        repo,
-        title,
-        body,
-      });
-
-      res.status(201).json(issue.data);
+      createIssue(issue, app)
     } catch (error) {
       app.log.error(error);
       res.status(500).json({ error: "Failed to create issue" });
     }
   });
 };
-
+const createIssue = async function (issue, app) {
+  const github = await app.auth();
+  const owner = issue.owner; const repo = issue.repo; const title = issue.title; const body = issue.body; const assignees = issue.assignees; const labels = issue.labels
+  return github.issues.create({ owner, repo, title, body, labels, assignees })
+}
