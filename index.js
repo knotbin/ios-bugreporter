@@ -4,6 +4,8 @@
  */
 import * as express from "express";
 import { ProbotOctokit } from "probot";
+import { Octokit } from "@octokit/core";
+import { createProbotAuth } from "octokit-auth-probot";
 
 export default (app, { getRouter }) => {
   const octokit = new ProbotOctokit({
@@ -18,7 +20,6 @@ export default (app, { getRouter }) => {
   app.log.info("Yay, the app was loaded!");
 
   router.post("/new", async (req, res) => {
-    const github = await octokit.auth()
     try {
       const issue = {
         title: req.query.title,
@@ -26,7 +27,7 @@ export default (app, { getRouter }) => {
         labels: ["bug"]
       };
       const path = `${req.query.owner}/${req.query.repo}`
-      github.issues.create(
+      octokit.issues.create(
         req.query.owner, req.query.repo, issue.title, issue.body 
       )
     } catch (error) {
