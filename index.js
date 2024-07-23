@@ -6,14 +6,19 @@ import * as express from "express";
 import { ProbotOctokit } from "probot";
 
 export default (app, { getRouter }) => {
-  const octokit = new ProbotOctokit()
+  const octokit = new ProbotOctokit({
+    auth: {
+      appId: process.env.APP_ID,
+      privateKey: process.env.PRIVATE_KEY,
+    }
+  })
   const router = getRouter("/issue");
   router.use(express.static("public"));
   // Your code here
   app.log.info("Yay, the app was loaded!");
 
   router.post("/new", async (req, res) => {
-    const github = await app.auth();
+    const github = await octokit.auth()
     try {
       const issue = {
         title: req.query.title,
