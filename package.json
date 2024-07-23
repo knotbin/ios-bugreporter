@@ -16,6 +16,8 @@
     "test": "node --test"
   },
   "dependencies": {
+    "octokit": "^4.0.2",
+    "octokit-auth-probot": "^3.0.0",
     "probot": "^13.0.1"
   },
   "devDependencies": {
