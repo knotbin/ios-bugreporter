@@ -4,7 +4,6 @@
  */
 import * as express from "express";
 import { ProbotOctokit } from "probot";
-import { Octokit } from "@octokit/core";
 import { createProbotAuth } from "octokit-auth-probot";
 
 export default (app, { getRouter }) => {
